@@ -15,13 +15,14 @@ defaults
 {{ $serviceEnv := env "SERVICE_ENV" }}
 {{ $serviceProto := or (env "SERVICE_PROTO") "HTTP" }}
 
-{{ if eq $serviceProto "HTTP" }}
 frontend www
     bind *:80
-
+{{ if eq $serviceProto "TCP" }}
+   mode tcp
+   option tcplog
+{{ end }}
     # Generated automatically by consul-template
     use_backend {{ $serviceEnv }}-{{ $serviceName }}_backend
-{{ end }}
 
 backend {{ $serviceEnv }}-{{ $serviceName }}_backend
 {{ range service (printf "%s.%s" $serviceEnv $serviceName) }}
